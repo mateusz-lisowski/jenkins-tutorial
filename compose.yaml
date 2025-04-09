@@ -1,7 +1,6 @@
 services:
   jenkins-docker:
     image: docker:dind
-    container_name: jenkins-docker
     privileged: true
     environment:
       - DOCKER_TLS_CERTDIR=/certs
@@ -17,10 +16,8 @@ services:
     command: --storage-driver overlay2
 
   jenkins-server:
-    image: jenkins-server
-    build:
-      context: .
-    container_name: jenkins-server
+    image: jenkins-stencil/jenkins-server:latest
+    build: ./jenkins/
     restart: on-failure
     environment:
       - DOCKER_HOST=tcp://docker:2376
