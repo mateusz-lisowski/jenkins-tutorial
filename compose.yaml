@@ -7,8 +7,6 @@ services:
     volumes:
       - jenkins-docker-certs:/certs/client
       - jenkins-data:/var/jenkins_home
-    ports:
-      - "2376:2376"
     networks:
       jenkins:
         aliases:
@@ -16,7 +14,6 @@ services:
     command: --storage-driver overlay2
 
   jenkins-server:
-    image: jenkins-stencil/jenkins-server:latest
     build: ./jenkins/
     restart: on-failure
     environment:
@@ -26,15 +23,18 @@ services:
     volumes:
       - jenkins-data:/var/jenkins_home
       - jenkins-docker-certs:/certs/client:ro
-    ports:
-      - "8080:8080"
-      - "50000:50000"
     networks:
+      - proxy-network
       - jenkins
 
 networks:
   jenkins:
     driver: bridge
+
+  # Reference the pre-existing external network shared with Caddy
+  proxy-network: # The name here can be different, but the 'name' property must match
+    name: caddy-proxy-network # Use the exact name created earlier
+    external: true
 
 volumes:
   jenkins-docker-certs:
